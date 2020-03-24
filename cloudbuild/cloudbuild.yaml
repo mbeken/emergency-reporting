@@ -1,0 +1,25 @@
+steps:
+
+    #
+    # Building build container
+    #
+    
+    # Try to pull build image
+    - name: 'gcr.io/cloud-builders/docker'
+      entrypoint: 'bash'
+      args:
+      - '-c'
+      - |
+        docker pull eu.gcr.io/$PROJECT_ID/emergency-reporting-builder:latest || exit 0    
+    #  Build image, using cahced image if available.
+    - id: build-builder
+      name: gcr.io/cloud-builders/docker
+      dir: cloudbuild/
+      args: [
+                'build',
+                '--rm=false',
+                '-t','eu.gcr.io/$PROJECT_ID/emergency-reporting-builder:latest',
+                '--cache-from', 'eu.gcr.io/$PROJECT_ID/emergency-reporting-builder:latest',
+                '-f', './Dockerfile', '.'
+        ]
+    
