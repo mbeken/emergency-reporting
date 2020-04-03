@@ -11,7 +11,7 @@ steps:
       - '-c'
       - |
         docker pull eu.gcr.io/$PROJECT_ID/emergency-reporting-builder:latest || exit 0    
-    #  Build image, using cahced image if available.
+    #  Build image, using cached image if available.
     - id: build-builder
       name: gcr.io/cloud-builders/docker
       dir: cloudbuild/
@@ -22,4 +22,30 @@ steps:
                 '--cache-from', 'eu.gcr.io/$PROJECT_ID/emergency-reporting-builder:latest',
                 '-f', './Dockerfile', '.'
         ]
+
+
+    - id: build-package
+      name: eu.gcr.io/$PROJECT_ID/emergency-reporting-builder:latest
+      args: ['cloudbuild/scripts/build.sh']
+      waitFor:
+        - build-builder      
+
+    #
+    # Deploy to PyPI if its a new version number
+    #        
+
+    - name: eu.gcr.io/$PROJECT_ID/emergency-reporting-builder:latest
+      id: 'push to pypi'
+      secretEnv: ['PYPI_PASSWORD']
+      env: ['_PYPI_USERNAME=mbeken']
+      args: ['cloudbuild/scripts/deploy.sh']
+      waitFor:
+        - build-package
+
+# Define image so that it is pushed (think cached for next build)
+images: ['eu.gcr.io/$PROJECT_ID/emergency-reporting-builder:latest']
+secrets:
+  - kmsKeyName: 'projects/tidbitz/locations/global/keyRings/cloud-build/cryptoKeys/pypi-password' 
+    secretEnv:
+      PYPI_PASSWORD: 'CiQAOgNfDqbt0KjcP/dh7QJ+ZGag+DZTw9/NHmJ7AL9Dos0ys8QSNQDNmejPkfSs3XG/Z3dRq8Aj4RU8MEg4mecWiBpaIEZRpyipvvJxKATKnsLhfcpDmo8YDOzD'
     

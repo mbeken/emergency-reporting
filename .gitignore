@@ -48,6 +48,8 @@ htmlcov/
 .coverage.*
 .cache
 nosetests.xml
+.vscode/
+dev_scripts/
 coverage.xml
 *.cover
 .hypothesis/
