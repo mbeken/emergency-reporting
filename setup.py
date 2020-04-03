@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-import pyslo
+import emergency_reporting
 
 setup(
     name='emergency-reporting',
