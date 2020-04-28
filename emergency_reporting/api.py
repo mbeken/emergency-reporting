@@ -17,7 +17,7 @@ class API():
         return urljoin(self.base, self.path)
 
     def make_call(self, path, params, retry=1):
-        print(f'Making url call retry ={retry}')
+        # print(f'Making url call retry ={retry}')
         limit = 5
         headers = {
             'Ocp-Apim-Subscription-Key': self.subscription.Auth.primary_key,
