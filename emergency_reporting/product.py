@@ -1,6 +1,7 @@
 from .api import (
     AgenyIncidentsApi,
     AgencyUsersApi,
+    AgencyApparatusApi,
     AgencyStationsApi,
     AgencyClassesApi
     )
@@ -21,6 +22,7 @@ class AgencyIncidentsProduct(Product):
         super().__init__('Agency Incidents', 'agencyincidents/', subscription)
         self.AgencyIncidentsApi = AgenyIncidentsApi(subscription)
         self.AgencyUsersApi = AgencyUsersApi(subscription)
+        self.AgencyApperatusApi = AgencyApparatusApi(subscription)
 
 
 class AgencyAdministrationProduct(Product):

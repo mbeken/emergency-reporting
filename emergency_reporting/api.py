@@ -118,6 +118,26 @@ class AgenyIncidentsApi(API):
         else:
             raise WebCallException
 
+    def get_all_exposure_apparatuses(self, **kwargs):
+        path = 'exposures/apparatuses'
+        response = self.make_call(path, kwargs)
+        if response.ok:
+            return response.json()['exposureApparatuses']
+        else:
+            raise WebCallException    
+
+class AgencyApparatusApi(API):
+
+    def __init__(self, subscription):
+        super().__init__('Ageny Apparatus', 'agencyapparatus/', subscription=subscription)
+
+    def get_apparatuses(self, **kwargs):
+        path = 'apparatus'
+        response = self.make_call(path, kwargs)
+        if response.ok:
+            return response.json()['apparatus']
+        else:
+            raise WebCallException
 
 class AgencyUsersApi(API):
 
