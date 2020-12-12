@@ -17,7 +17,7 @@ class API():
         return urljoin(self.base, self.path)
 
     def make_call(self, path, params, retry=1):
-        print(f'Making url call retry ={retry}')
+        # print(f'Making url call retry ={retry}')
         limit = 5
         headers = {
             'Ocp-Apim-Subscription-Key': self.subscription.Auth.primary_key,
@@ -33,6 +33,13 @@ class API():
 
         return response
 
+    def retrieve(self, path, params, json_key):
+        response = self.make_call(path, params)
+        if response.ok:
+            return response.json()[json_key]
+        else:
+            raise WebCallException(response.status_code)            
+
 
 class AgenyIncidentsApi(API):
 
@@ -45,23 +52,17 @@ class AgenyIncidentsApi(API):
         rowVersion, limit, offset, filter, orderby
         '''
         path = 'incidents'
-        response = self.make_call(path, kwargs)
-        if response.ok:
-            return response.json()['incidents']
-        else:
-            raise WebCallException(response.status_code)
+        json_key = 'incidents'
+        return self.retrieve(path, kwargs, json_key)
 
-    def get_exposures(self, incidentID, **kwargs):
+    def get_exposures(self, incident_id, **kwargs):
         '''
         kwargs are parsed as the get params. Valid args are:-
         rowVersion, limit, offset, filter, orderby
         '''
-        path = f'incidents/{incidentID}/exposures'
-        response = self.make_call(path, kwargs)
-        if response.ok:
-            return response.json()['exposures']
-        else:
-            raise WebCallException(response.status_code)
+        path = f'incidents/{incident_id}/exposures'
+        json_key = 'exposures'
+        return self.retrieve(path, kwargs, json_key)
 
     def get_all_exposures(self, **kwargs):
         '''
@@ -69,19 +70,13 @@ class AgenyIncidentsApi(API):
         rowVersion, limit, offset, filter, orderby
         '''
         path = 'incidents/exposures'
-        response = self.make_call(path, kwargs)
-        if response.ok:
-            return response.json()['exposures']
-        else:
-            raise WebCallException(response.status_code)
+        json_key = 'exposures'
+        return self.retrieve(path, kwargs, json_key)
 
     def get_exposure_crew_members(self, exposureID, **kwargs):
         path = f'exposures/{exposureID}/crewmembers'
-        response = self.make_call(path, kwargs)
-        if response.ok:
-            return response.json()['crewMembers']
-        else:
-            raise WebCallException(response.status_code) 
+        json_key = 'crewMembers'
+        return self.retrieve(path, kwargs, json_key)
 
     def get_all_exposure_crew_members(self, **kwargs):
         path = 'exposures/crewmembers'
@@ -123,6 +118,26 @@ class AgenyIncidentsApi(API):
         else:
             raise WebCallException
 
+    def get_all_exposure_apparatuses(self, **kwargs):
+        path = 'exposures/apparatuses'
+        response = self.make_call(path, kwargs)
+        if response.ok:
+            return response.json()['exposureApparatuses']
+        else:
+            raise WebCallException    
+
+class AgencyApparatusApi(API):
+
+    def __init__(self, subscription):
+        super().__init__('Ageny Apparatus', 'agencyapparatus/', subscription=subscription)
+
+    def get_apparatuses(self, **kwargs):
+        path = 'apparatus'
+        response = self.make_call(path, kwargs)
+        if response.ok:
+            return response.json()['apparatus']
+        else:
+            raise WebCallException
 
 class AgencyUsersApi(API):
 
